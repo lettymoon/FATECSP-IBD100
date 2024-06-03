@@ -20,5 +20,20 @@ Professor: [Prof. Dr. Napoleão Verardi Galegale](https://buscatextual.cnpq.br/b
 
 - [Aula 02: Introdução ao Ambiente de Banco de Dados](aula2)
 - [Aula 03: Introdução ao Ambiente de Banco de Dados](aula3)
+- [Aula 04: Introdução ao Ambiente de Banco de Dados](aula4)
+- [Aula 05: Modelagem de dados, Modelos de bancos de dados](aula5)
+- [Aula 06: Modelo Entidade-Relacionamento - MER](aula6)
+- [Aula 07: Modelo Entidade-Relacionamento - MER](aula7)
+- [Aula 08: Modelo Entidade-Relacionamento - MER](aula8)
+- [Aula 09: Modelo Relacional](aula10)
+- [Aula 10: Normalização](aula11)
+- [Aula 11: Álgebra Relacional](aula12)
+- [Aula 12: Álgebra Relacional](aula13)
+- [Aula 13: Introdução ao SQL: DDL, DML, DCL](aula14)
+- [Aula 14: Laboratório](aula15)
+- [Aula 15: Laboratório](aula16)
+- [Aula 16: Laboratório](aula17)
+- [Aula 17: Laboratório](aula18)
+- [Aula 18: Laboratório](aula19)
 
 ## Links Didáticos
