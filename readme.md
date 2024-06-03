@@ -2,9 +2,9 @@
 
 Repositório da disciplina IBD001 Banco de Dados. FATEC São Paulo. 01/2024
 
-Disciplina ministrada usando ---
+Disciplina ministrada usando SQLite
 
-Professor: [Prof. Dr. Napoleão Verardi Galegale](https://buscatextual.cnpq.br/buscatextual/visualizacv.do;jsessionid=74D48144BAF1F101C03CBE6A587B99A3.buscatextual_0)
+Professor: [Prof. Dr. Napoleão Verardi Galegale](https://buscatextual.cnpq.br/buscatextual/visualizacv.do;jsessionid=74D48144BAF1F101C03CBE6A587B99A3.buscatextual_0) [Prof. Aux. Regis Novais Matsumoto]
 
 ## Index
 
