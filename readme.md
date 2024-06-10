@@ -32,8 +32,5 @@ Professor: [Prof. Dr. Napoleão Verardi Galegale](https://buscatextual.cnpq.br/b
 - [Aula 14: Introdução ao SQL: DDL, DML, DCL](aula14)
 - [Aula 15: Laboratório](aula15)
 - [Aula 16: Laboratório](aula16)
-- [Aula 17: Laboratório](aula17)
-- [Aula 18: Laboratório](aula18)
-- [Aula 19: Laboratório](aula19)
 
 ## Links Didáticos
