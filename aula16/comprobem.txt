@@ -1,0 +1,247 @@
+CREATE TABLE CCUSTO (
+  CCusto VARCHAR(3) NOT NULL,
+  NomeCC VARCHAR(10) NOT NULL,
+  
+  CONSTRAINT PK_CCUSTO PRIMARY KEY(CCusto)
+);
+
+CREATE TABLE SECAO (
+  Secao NUMERIC(3) NOT NULL,
+  NomeSec VARCHAR(20) NOT NULL,
+  CCusto VARCHAR(3) NOT NULL,
+  
+  CONSTRAINT PK_SECAO PRIMARY KEY(Secao),
+  CONSTRAINT FK_SECAO_CCUSTO FOREIGN KEY(CCusto) REFERENCES CCUSTO(CCusto)
+);
+
+CREATE TABLE ALMOXARIFE (
+  NAlmox NUMERIC(4) NOT NULL,
+  Almoxarife VARCHAR(30) NOT NULL,
+  
+  CONSTRAINT PK_ALMOXARIFE PRIMARY KEY(NAlmox)
+);
+
+CREATE TABLE REQUISICAO (
+  NumReq NUMERIC(7) NOT NULL,
+  DtReq DATETIME(10) NOT NULL,
+  Secao NUMERIC(3) NOT NULL,
+  NAlmox NUMERIC(4) NOT NULL,
+  
+  CONSTRAINT PK_REQUISICAO PRIMARY KEY(NumReq),
+  CONSTRAINT FK_REQUISCAO_SECAO FOREIGN KEY(Secao) REFERENCES SECAO(Secao),
+  CONSTRAINT FK_REQUISICAO_ALMOXARIFE FOREIGN KEY(NAlmox) REFERENCES ALMOXARIFE(NAlmox)
+);
+
+CREATE TABLE MATERIAL (
+  CdMat NUMERIC(4) NOT NULL,
+  DescrMatPrima VARCHAR(15) NOT NULL,
+  
+  CONSTRAINT PK_MATERIAL PRIMARY KEY(CdMat)
+);
+
+CREATE TABLE REQ_MAT (
+  NumReq NUMERIC(7) NOT NULL,
+  CdMat NUMERIC(4) NOT NULL,
+  QtdReq NUMERIC(7) NOT NULL,
+  VlrUnit DECIMAL(10,2) NOT NULL,
+  
+  CONSTRAINT PK_REQ_MAT PRIMARY KEY(NumReq, CdMat), 
+  CONSTRAINT FK_REQ_MAT_REQUISICAO FOREIGN KEY(NumReq) REFERENCES REQUISICAO(NumReq),
+  CONSTRAINT FK_REQ_MAT_MATERIAL FOREIGN KEY(CdMat) REFERENCES MATERIAL(CdMat)
+);
+
+--- Questão 01 - inserindo os dados nas tabelas
+
+
+INSERT INTO CCUSTO(CCusto, NomeCC)
+VALUES('10A', 'SUB-1'),
+('10B', 'Mult-2'),
+('11A', 'SUB-2'),
+('12A', 'SUB-3');
+
+INSERT INTO SECAO(Secao, NomeSec, CCusto)
+VALUES(020, 'Manutencao', '10A'),
+(021, 'Producao-1', '10A'),
+(022, 'Reparos', '10B'),
+(025, 'Escritorio', '10B'),
+(023, 'Producao-2', '11A'),
+(024, 'Producao-3', '11A'),
+(010, 'ADM', '12A');
+
+INSERT INTO ALMOXARIFE(NAlmox, Almoxarife)
+VALUES(1001, 'Joao da Silva'),
+(1002, 'Antonio Prado'),
+(1006, 'Antonio Sanos'),
+(1003, 'Loureco Dias'),
+(1008, 'Sergio Melo'),
+(1004, 'Joao Antonio'),
+(1005, 'Silvino Torres'),
+(1007, 'Valter Souza');
+
+INSERT INTO REQUISICAO(NumReq, DtReq, Secao, NAlmox)
+VALUES (101, 20020601, 020, 1001),
+(106, 20020602, 020, 1002),
+(102, 20020601, 021, 1001),
+(109, 20020604, 021, 1006),
+(103, 20020601, 022, 1003),
+(107, 20020603, 025, 1008),
+(108, 20020603, 025, 1001),
+(104, 20020602, 023, 1004),
+(105, 20020602, 024, 1005),
+(110, 20020604, 010, 1006),
+(111, 20020604, 101, 1007);
+
+INSERT INTO MATERIAL(CdMat, DescrMatPrima)
+VALUES (100, 'Enxofre'),
+(101, 'Areia Monaztica'),
+(102, 'Argila Moida');
+
+INSERT INTO REQ_MAT(NumReq, CdMat, QtdReq, VlrUnit)
+VALUES (101, 100, 8, 12.50),
+(101, 101, 5, 10.00),
+(106, 100, 15, 15.00);
+
+SELECT * FROM CCUSTO;
+SELECT * FROM SECAO;
+SELECT * FROM ALMOXARIFE;
+SELECT * FROM REQUISICAO;
+SELECT * FROM MATERIAL;
+SELECT * FROM REQ_MAT;
+
+-- Questao 01
+
+SELECT S.NomeSec AS Secao, COUNT(R.NumReq) AS QtdRequisicoes
+FROM SECAO S
+JOIN REQUISICAO R ON S.Secao = R.Secao
+WHERE S.NomeSec = 'Producao-1'
+GROUP BY S.NomeSec;
+
+-- Questao 02
+
+SELECT S.Secao AS CodigoSecao, S.NomeSec AS NomeSecao, SUM(RM.QtdReq * RM.VlrUnit) AS ValorTotalRequisicoes
+FROM SECAO S
+JOIN REQUISICAO R ON S.Secao = R.Secao
+JOIN REQ_MAT RM ON R.NumReq = RM.NumReq
+GROUP BY S.Secao, S.NomeSec;
+
+-- Questao 03
+
+SELECT S.NomeSec AS NomeSecao, SUM(RM.QtdReq * RM.VlrUnit) AS ValorTotalGasto
+FROM SECAO S
+JOIN REQUISICAO R ON S.Secao = R.Secao
+JOIN REQ_MAT RM ON R.NumReq = RM.NumReq
+WHERE S.NomeSec = 'Manutencao'
+GROUP BY S.NomeSec;
+
+-- Questao 04
+
+SELECT AVG(RM.QtdReq * RM.VlrUnit) AS ValorMedioAtendido
+FROM ALMOXARIFE A
+JOIN REQUISICAO R ON A.NAlmox = R.NAlmox
+JOIN REQ_MAT RM ON R.NumReq = RM.NumReq
+WHERE A.Almoxarife NOT LIKE '%Antonio%' AND A.Almoxarife NOT LIKE '%Joao%';
+
+-- Questao 05
+
+SELECT R.NumReq, A.Almoxarife
+FROM REQUISICAO
+JOIN ALMOXARIFE ON REQUISICAO.NAlmox = ALMOXARIFE.NAlmox
+WHERE R.NumReq IN (102, 103, 105, 111);
+
+-- Questao 06
+
+SELECT M.DescrMatPrima
+FROM MATERIAL M
+WHERE M.CdMat NOT IN (
+    SELECT RM.CdMat
+    FROM REQ_MAT RM
+    JOIN REQUISICAO R ON RM.NumReq = R.NumReq
+    JOIN SECAO S ON R.Secao = S.Secao
+    WHERE S.CCusto = '10A'
+);
+
+-- Quetao 07
+
+SELECT M.DescrMatPrima, RM.VlrUnit
+FROM MATERIAL M
+JOIN REQ_MAT RM ON M.CdMat = RM.CdMat
+ORDER BY RM.VlrUnit DESC
+LIMIT 1;
+
+-- Questao 08
+
+SELECT AVG(RequisicoesPorAlmoxarife.QtdRequisicoes) AS QuantidadeMediaRequisicoes
+FROM (
+    SELECT A.NAlmox, COUNT(R.NumReq) AS QtdRequisicoes
+    FROM ALMOXARIFE A
+    LEFT JOIN REQUISICAO R ON A.NAlmox = R.NAlmox
+    GROUP BY A.NAlmox
+) AS RequisicoesPorAlmoxarife;
+
+-- Questao 09
+
+SELECT R.NumReq, SUM(RM.QtdReq) AS QuantidadeSolicitada
+FROM REQUISICAO R
+JOIN REQ_MAT RM ON R.NumReq = RM.NumReq
+GROUP BY R.NumReq
+ORDER BY QuantidadeSolicitada DESC
+LIMIT 3;
+
+-- Questao 10
+
+SELECT M.DescrMatPrima, R.DtReq
+FROM MATERIAL M
+JOIN REQ_MAT RM ON M.CdMat = RM.CdMat
+JOIN REQUISICAO R ON RM.NumReq = R.NumReq
+WHERE M.DescrMatPrima = 'Enxofre'
+ORDER BY R.DtReq ASC
+LIMIT 1;
+
+UNION ALL
+
+SELECT M.DescrMatPrima, R.DtReq
+FROM MATERIAL M
+JOIN REQ_MAT RM ON M.CdMat = RM.CdMat
+JOIN REQUISICAO R ON RM.NumReq = R.NumReq
+WHERE M.DescrMatPrima = 'Enxofre'
+ORDER BY R.DtReq DESC
+
+-- Questao 11
+
+SELECT M.DescrMatPrima, R.DtReq AS DataMovimentacao, RM.NumReq, RM.QtdReq AS QuantidadeMovimentada
+FROM MATERIAL M
+JOIN REQ_MAT RM ON M.CdMat = RM.CdMat
+JOIN REQUISICAO R ON RM.NumReq = R.NumReq
+WHERE M.DescrMatPrima = 'Enxofre';
+
+-- Questao 12
+
+SELECT M.DescrMatPrima, R.DtReq AS DataRequisicao
+FROM MATERIAL M
+JOIN REQ_MAT RM ON M.CdMat = RM.CdMat
+JOIN REQUISICAO R ON RM.NumReq = R.NumReq
+WHERE R.DtReq BETWEEN '2002-06-01' AND '2002-06-02';
+
+-- Quesato 13
+
+SELECT S.Secao AS CodigoSecao, R.NumReq, M.DescrMatPrima, RM.QtdReq AS QuantidadeMovimentada
+FROM SECAO S
+JOIN REQUISICAO R ON S.Secao = R.Secao
+JOIN REQ_MAT RM ON R.NumReq = RM.NumReq
+JOIN MATERIAL M ON RM.CdMat = M.CdMat
+WHERE S.Secao = 020 AND S.CCusto = '10A';
+
+-- Questao 14
+
+SELECT A.Almoxarife, CC.CCusto, CC.NomeCC
+FROM ALMOXARIFE A
+JOIN REQUISICAO R ON A.NAlmox = R.NAlmox
+JOIN SECAO S ON R.Secao = S.Secao
+JOIN CCUSTO CC ON S.CCusto = CC.CCusto
+WHERE A.Almoxarife IN ('Joao da Silva', 'Joao Antonio')
+GROUP BY A.Almoxarife, CC.CCusto, CC.NomeCC;
+
+-- Questao 15
+
+
+
